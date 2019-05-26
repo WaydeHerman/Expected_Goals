@@ -9,16 +9,16 @@ INPUT_PATH = 'Data/JSON/'
 OUTPUT_PATH = 'Data/raw/'
 
 
-def getJSON(var1, var2):
+def getJSON(league_var, season_var):
     """
     Function to extract features from JSON match events.
 
-    :param var1: League name (str).
-    :param var2: Season name (str).
+    :param league_var: League name (str).
+    :param season_var: Season name (str).
     """
-    listOfJSON = []
+    list_of_JSON = []
     # Load the game events from the JSON csv:
-    with open((INPUT_PATH + "JSON_{}{}.csv".format(var1, var2)), 'r') as jsonfile:
+    with open((INPUT_PATH + "JSON_{}{}.csv".format(league_var, season_var)), 'r') as jsonfile:
         fieldnames = ['league', 'season', 'homeTeam',
             'awayTeam', 'date', 'gameData']
         reader = csv.DictReader(jsonfile, fieldnames=fieldnames)
@@ -31,10 +31,10 @@ def getJSON(var1, var2):
             entryGameData = entries['gameData']
             entryDict = {'entryLeague': entryLeague, 'entrySeason': entrySeason, 'entryHomeTeam': entryHomeTeam, 'entryAwayTeam': entryAwayTeam,
                                         'entryDate': entryDate, 'entryGameData': entryGameData}
-            listOfJSON.append(entryDict)
+            list_of_JSON.append(entryDict)
         jsonfile.close()
 
-    for jsons in listOfJSON:
+    for jsons in list_of_JSON:
         gameData = ast.literal_eval(jsons['entryGameData'])
         league = jsons['entryLeague']
         season = jsons['entrySeason']
@@ -48,19 +48,18 @@ def getJSON(var1, var2):
         aState = 0
 
         # Determines the GK's ID for each team (for dribbles on the GK):
-            # Update: Made it a list in case of GK substitutions.
-        GKHomeID = []
-        GKAwayID = []
+        gk_home_id = []
+        gk_away_id = []
         shotDatabase = []
         for gkevents in gameData['events']:
             for gkeventsb in gkevents['qualifiers']:
                 if 'GoalKick' in gkeventsb['type']['displayName']:
                     if gkevents['teamId'] == homeID:
-                        if gkevents['playerId'] not in GKHomeID:
-                            GKHomeID.append(int(gkevents['playerId']))
+                        if gkevents['playerId'] not in gk_home_id:
+                            gk_home_id.append(int(gkevents['playerId']))
                     if gkevents['teamId'] == awayID:
-                        if gkevents['playerId'] not in GKAwayID:
-                            GKAwayID.append(int(gkevents['playerId']))
+                        if gkevents['playerId'] not in gk_away_id:
+                            gk_away_id.append(int(gkevents['playerId']))
 
         iD = -1
         for event in gameData['events']:
@@ -72,7 +71,6 @@ def getJSON(var1, var2):
                 elif event['teamId'] == awayID:
                     shotTeam = awayTeam
                     shotState = aState
-                # NOTE: MAY NOT CARE ABOUT THE PLAYER
                 shotPlayerID = event['playerId']
                 shotTeamID = event['teamId']
                 shotMin = event['expandedMinute']
@@ -95,7 +93,6 @@ def getJSON(var1, var2):
                 shot6Yard = 0
                 shotPenaltyArea = 0
                 shotOutBox = 0
-                # NOTE: MAY NOT CARE ABOUT THE PLAYER
                 shotChanceCreatorID = None
                 shotChanceX1 = None
                 shotChanceY1 = None
@@ -197,9 +194,9 @@ def getJSON(var1, var2):
                                                 if 'dribbledID' in locals():
                                                     if oevent['eventId'] == int(dribbledID) and oevent['teamId'] != shotTeamID:
                                                         if 'playerId' in oevent:
-                                                            if oevent['playerId'] in GKHomeID:
+                                                            if oevent['playerId'] in gk_home_id:
                                                                 shotDribbleKeeperYN = 1
-                                                            elif oevent['playerId'] in GKAwayID:
+                                                            elif oevent['playerId'] in gk_away_id:
                                                                 shotDribbleKeeperYN = 1
                                                         else:
                                                             shotDribbleBeforeYN = 1
@@ -247,7 +244,7 @@ def getJSON(var1, var2):
                                             'shot6Yard': shot6Yard, 'shotPenaltyArea':shotPenaltyArea,'shotOutBox':shotOutBox}
                 shotDatabase.append(eventDict)
 
-        with open((OUTPUT_PATH + "shots_{}{}.csv".format(var1, var2)), 'a') as shotsfile:
+        with open((OUTPUT_PATH + "shots_{}{}.csv".format(league_var, season_var)), 'a') as shotsfile:
             fieldnames = ['league', 'season', 'homeTeam','awayTeam','date','shotTeam','shotMin','shotSec','shotX','shotY','shotGoalYN','shotState','shotHeaderYN',
                                         'shotBigChanceYN', 'shotFromCornerYN', 'shotFastBreakYN','shotPenaltyYN','shotDirectFKYN','shotOwnGoalYN','shotChanceX1','shotChanceY1',
                                         'shotChanceX2', 'shotChanceY2', 'shotCrossYN','shotThroughballYN','shotIndirectFKYN','shotSecondThroughballYN','shotDribbleKeeperYN',
