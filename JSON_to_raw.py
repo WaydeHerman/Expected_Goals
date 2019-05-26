@@ -1,3 +1,11 @@
+"""
+This file handles converting scraped JSON files to 'raw' tabular data.
+
+usage:
+    >>> define list of seasons ['1213', '1314', '1415', '1516', '1617', '1718', '1819']
+    >>> define list of leagues ['EPL', 'LL', 'FL', 'ISA', 'GBL']
+"""
+
 import csv
 import json
 import sys
@@ -8,6 +16,8 @@ csv.field_size_limit(sys.maxsize)
 INPUT_PATH = 'Data/JSON/'
 OUTPUT_PATH = 'Data/raw/'
 
+list_of_seasons = ['1213', '1314']
+list_of_leagues = ['EPL', 'LL']
 
 def getJSON(league_var, season_var):
     """
@@ -254,9 +264,6 @@ def getJSON(league_var, season_var):
                 writer.writerow(ia)
             shotsfile.close()
 
-
-list_of_seasons = ['1213', '1314']
-list_of_leagues = ['EPL', 'LL']
 
 for season in list_of_seasons:
     for league in list_of_leagues:

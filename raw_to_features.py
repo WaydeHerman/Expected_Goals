@@ -1,9 +1,17 @@
+"""
+This file handles converting 'raw' tabular data to processed data for modeling.
+
+usage:
+    >>> define list of seasons ['1213', '1314', '1415', '1516', '1617', '1718', '1819']
+    >>> define list of leagues ['EPL', 'LL', 'FL', 'ISA', 'GBL']
+"""
+
 import math
 import numpy as np
 import pandas as pd
 
 INPUT_PATH = './Data/raw/'
-OUTPUT_PATH = './Data/features/'
+OUTPUT_PATH = './Data/processed/'
 
 list_of_seasons = ['1213', '1314']
 list_of_leagues = ['EPL', 'LL']
