@@ -34,6 +34,11 @@ data_df = pd.concat([data_df, dummy_league], axis=1)
 data_df['state'] = data_df['state'].apply(
     lambda x: 1 if x >= 1 else (-1 if x <= -1 else 0))
 
+# one-hot encoding for state feature:
+dummy_state = pd.get_dummies(data_df['state'])
+data_df.drop(['state'], axis=1, inplace=True)
+data_df = pd.concat([data_df, dummy_state], axis=1)
+
 # Correct x-axis:
 data_df['x'] = 100 - data_df['x']
 
@@ -67,7 +72,8 @@ for index, row in data_df[['x', 'y', 'distance']].iterrows():
     data_df.loc[index, 'angle'] = angle
 
 # split dataframe into subtypes:
-direct_df = data_df[data_df['directFKYN'] == 1]
+direct_df = data_df[(data_df['directFKYN'] == 1) & (
+    (data_df['indirectFKYN'] == 0) & (data_df['crossYN'] == 0))]
 head_cross_df = data_df[(data_df['headerYN'] == 1) & (data_df['crossYN'] == 1)]
 cross_df = data_df[(data_df['headerYN'] == 0) & (data_df['crossYN'] == 1)]
 head_df = data_df[(data_df['headerYN'] == 1) & (data_df['crossYN'] == 0)]
