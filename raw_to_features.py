@@ -35,7 +35,7 @@ data_df['state'] = data_df['state'].apply(
     lambda x: 1 if x >= 1 else (-1 if x <= -1 else 0))
 
 # one-hot encoding for state feature:
-dummy_state = pd.get_dummies(data_df['state'])
+dummy_state = pd.get_dummies(data_df['state'], prefix='state')
 data_df.drop(['state'], axis=1, inplace=True)
 data_df = pd.concat([data_df, dummy_state], axis=1)
 
