@@ -2,11 +2,11 @@ import math
 import numpy as np
 import pandas as pd
 
-INPUT_PATH = './Data/csv/'
+INPUT_PATH = './Data/raw/'
 OUTPUT_PATH = './Data/features/'
 
-list_of_seasons = ['1213', '1314', '1415', '1516', '1617', '1718', '1819']
-list_of_leagues = ['EPL', 'LL', 'GBL', 'ISA' 'FL']
+list_of_seasons = ['1213', '1314']
+list_of_leagues = ['EPL', 'LL']
 
 data_list = []
 for season in list_of_seasons:
@@ -75,8 +75,8 @@ regular_df = data_df[(data_df['headerYN'] == 0) & (
     data_df['crossYN'] == 0) & (data_df['directFKYN'] == 0)]
 
 # save as csv's:
-direct_df.to_csv(OUTPUT_PATH + 'direct_df.csv')
-head_cross_df.to_csv(OUTPUT_PATH + 'head_cross_df.csv')
-cross_df.to_csv(OUTPUT_PATH + 'cross_df.csv')
-head_df.to_csv(OUTPUT_PATH + 'head_df.csv')
-regular_df.to_csv(OUTPUT_PATH + 'regular_df.csv')
+direct_df.to_csv(OUTPUT_PATH + 'direct_df.csv', index=False)
+head_cross_df.to_csv(OUTPUT_PATH + 'head_cross_df.csv', index=False)
+cross_df.to_csv(OUTPUT_PATH + 'cross_df.csv', index=False)
+head_df.to_csv(OUTPUT_PATH + 'head_df.csv', index=False)
+regular_df.to_csv(OUTPUT_PATH + 'regular_df.csv', index=False)
