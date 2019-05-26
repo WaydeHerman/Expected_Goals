@@ -14,7 +14,7 @@ def getJSON(var1, var2):
         Function to extract features from JSON match events.
 
     :param var1: League name (str).
-        :param var2: Season name (str).
+    :param var2: Season name (str).
     """
       listOfJSON = []
        # Load the game events from the JSON csv:
