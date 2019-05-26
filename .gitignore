@@ -1,0 +1,19 @@
+# virtualenv
+venv/
+
+# IPython Notebook
+.ipynb_checkpoints
+
+# VSCode
+.vscode/
+
+# Project Specific
+EDA old.ipynb
+
+# OSX 
+.DS_Store
+
+# Data
+data/features/*
+data/JSON/*
+data/raw/*
