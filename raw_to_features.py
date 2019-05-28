@@ -13,8 +13,8 @@ import pandas as pd
 INPUT_PATH = './Data/raw/'
 OUTPUT_PATH = './Data/processed/'
 
-list_of_seasons = ['1213', '1314']
-list_of_leagues = ['EPL', 'LL']
+list_of_seasons = ['1213', '1314', '1415', '1516', '1617', '1718']
+list_of_leagues = ['EPL', 'LL', 'FL', 'ISA', 'GBL']
 
 data_list = []
 for season in list_of_seasons:
@@ -54,7 +54,6 @@ data_df['x'] = 100 - data_df['x']
 data_df['distance'] = np.sqrt(data_df['x']**2 + (50 - data_df['y'])**2)
 
 # angle of goals seen:
-
 for index, row in data_df[['x', 'y', 'distance']].iterrows():
     if row['y'] <= 44.3:
         if row['x'] != 0:
@@ -83,14 +82,41 @@ for index, row in data_df[['x', 'y', 'distance']].iterrows():
 direct_df = data_df[(data_df['directFKYN'] == 1) & (
     (data_df['indirectFKYN'] == 0) & (data_df['crossYN'] == 0))]
 head_cross_df = data_df[(data_df['headerYN'] == 1) & (data_df['crossYN'] == 1)]
-cross_df = data_df[(data_df['headerYN'] == 0) & (data_df['crossYN'] == 1)]
+cross_df = data_df[(data_df['headerYN'] == 0)
+                   & (data_df['crossYN'] == 1)]
 head_df = data_df[(data_df['headerYN'] == 1) & (data_df['crossYN'] == 0)]
 regular_df = data_df[(data_df['headerYN'] == 0) & (
     data_df['crossYN'] == 0) & (data_df['directFKYN'] == 0)]
 
+league_cols = dummy_league.columns.tolist()
+state_cols = dummy_state.columns.tolist()
+
+# drop unnused features:
+direct_to_drop = ['headerYN', 'bigChanceYN', 'fromCornerYN', 'fastBreakYN', 'directFKYN',
+                  'crossYN', 'throughballYN', 'indirectFKYN', 'secondThroughballYN', 'dribbleKeeperYN',
+                  'dribbleBeforeYN', 'reboundYN', 'errorYN'] + state_cols + league_cols
+
+head_cross_to_drop = ['headerYN', 'directFKYN', 'crossYN', 'throughballYN', 'secondThroughballYN',
+                      'dribbleKeeperYN', 'dribbleBeforeYN', 'reboundYN']
+
+cross_to_drop = ['headerYN', 'directFKYN', 'crossYN', 'throughballYN', 'secondThroughballYN',
+                 'dribbleKeeperYN', 'dribbleBeforeYN', 'errorYN', 'reboundYN']
+
+head_to_drop = ['headerYN', 'directFKYN',
+                'crossYN', 'dribbleKeeperYN', 'dribbleBeforeYN']
+
+regular_to_drop = ['headerYN', 'directFKYN', 'crossYN', 'throughballYN', 'secondThroughballYN',
+                   'dribbleBeforeYN', ]
+
+direct_df = direct_df.drop(direct_to_drop, axis=1)
+head_cross_df = head_cross_df.drop(head_cross_to_drop, axis=1)
+cross_df = cross_df.drop(cross_to_drop, axis=1)
+head_df = head_df.drop(head_to_drop, axis=1)
+regular_df = regular_df.drop(regular_to_drop, axis=1)
+
 # save as csv's:
-direct_df.to_csv(OUTPUT_PATH + 'direct_df.csv', index=False)
-head_cross_df.to_csv(OUTPUT_PATH + 'head_cross_df.csv', index=False)
-cross_df.to_csv(OUTPUT_PATH + 'cross_df.csv', index=False)
-head_df.to_csv(OUTPUT_PATH + 'head_df.csv', index=False)
-regular_df.to_csv(OUTPUT_PATH + 'regular_df.csv', index=False)
+direct_df.to_csv(OUTPUT_PATH + 'direct.csv', index=False)
+head_cross_df.to_csv(OUTPUT_PATH + 'head_cross.csv', index=False)
+cross_df.to_csv(OUTPUT_PATH + 'cross.csv', index=False)
+head_df.to_csv(OUTPUT_PATH + 'head.csv', index=False)
+regular_df.to_csv(OUTPUT_PATH + 'regular.csv', index=False)

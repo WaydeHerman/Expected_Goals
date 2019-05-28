@@ -16,8 +16,8 @@ csv.field_size_limit(sys.maxsize)
 INPUT_PATH = 'Data/JSON/'
 OUTPUT_PATH = 'Data/raw/'
 
-list_of_seasons = ['1213', '1314']
-list_of_leagues = ['EPL', 'LL']
+list_of_seasons = ['1213', '1314', '1415', '1516', '1617', '1718']
+list_of_leagues = ['EPL', 'LL', 'FL', 'ISA', 'GBL']
 
 def getJSON(league_var, season_var):
     """
