@@ -1,0 +1,40 @@
+hyperparameter_space:
+  logisticregression__C: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - !!python/name:numpy.ndarray ''
+    - !!python/tuple
+      - 0
+    - !!binary |
+      Yg==
+    state: !!python/tuple
+    - 1
+    - !!python/tuple
+      - 40
+    - !!python/object/apply:numpy.dtype
+      args:
+      - f8
+      - 0
+      - 1
+      state: !!python/tuple
+      - 3
+      - <
+      - null
+      - null
+      - null
+      - -1
+      - -1
+      - 0
+    - false
+    - !!binary |
+      /Knx0k1iUD+7ZHpblb9UP0z2m+N7Rlo/eq1nmCSjYD9lWVa2sRFlP9C+WaZ3rmo/DLXD9vvkcD+s
+      r1AEE2V1P48UnOsOGHs/xqR+5dcngT8CuWJLvrmFP+Ye6w9Ig4s/dRDEa7xrkT8m9maluA+WP73c
+      +4gp8Js/P1uwoK2woT88w2dAB2emP93FE+a5Xqw/ac2Pq6/2sT9rO+9er7+2P0X2bdD/zrw/gKMe
+      xMY9wj+WWFhYthnHPx7qoQsCQc0/NRvKMveF0j8YVCGZIXXXP/DPC3bHtN0/iIHyUEXP4j+gTT+j
+      9tHnPxx4NglXKu4/f0YuibUZ8z/bPHMOOzD4PxjnRtq3of4/MxqOV0xlA0ChM6CI9I8IQNaRaRrx
+      Gg9AZRfiSQ6yE0Ac9SLWKPEYQCpKQRcKlh9AAAAAAAAAJEA=
+  logisticregression__solver:
+  - liblinear
+  - lbfgs
+model_name: LogisticRegression
+scale: true
+search_method: GridSearchCV

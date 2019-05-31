@@ -1,9 +1,67 @@
 
+import pandas as pd
+import numpy as np
+import math
 from matplotlib import pyplot
 from sklearn.calibration import calibration_curve
 from sklearn.preprocessing import minmax_scale
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+
+
+def preprocess_data(df):
+
+    # 'one-hot' encoding for league feature:
+    df['Premier League'] = df['league'].apply(
+        lambda x: 1 if x == 'Premier League' else 0)
+    df['La Liga'] = df['league'].apply(lambda x: 1 if x == 'La Liga' else 0)
+    df['Ligue 1'] = df['league'].apply(lambda x: 1 if x == 'Ligue 1' else 0)
+    df['Bundesliga'] = df['league'].apply(
+        lambda x: 1 if x == 'Bundesliga' else 0)
+    df['Serie A'] = df['league'].apply(lambda x: 1 if x == 'Serie A' else 0)
+    df.drop(['league'], axis=1, inplace=True)
+
+    # 'one-hot' encoding for state feature:
+    df['state_-1'] = df['state'].apply(lambda x: 1 if x <= -1 else 0)
+    df['state_0'] = df['state'].apply(lambda x: 1 if x == 0 else 0)
+    df['state_1'] = df['state'].apply(lambda x: 1 if x >= 1 else 0)
+    df.drop(['state'], axis=1, inplace=True)
+
+    # Correct x-axis:
+    df['x'] = 100 - df['x']
+
+    # distance to the centre of the goal posts:
+    df['distance'] = np.sqrt(df['x']**2 + (50 - df['y'])**2)
+
+    # angle of goals seen:
+    for index, row in df[['x', 'y', 'distance']].iterrows():
+        if row['y'] <= 44.3:
+            if row['x'] != 0:
+                b = 44.3 - row['y']
+                c = 55.7 - row['y']
+                angle = math.degrees(
+                    math.atan(c/row['x']) - math.atan(b/row['x']))
+            else:
+                angle = 0
+        elif row['y'] >= 55.7:
+            if row['x'] != 0:
+                b = row['y'] - 55.7
+                c = row['y'] - 44.3
+                angle = math.degrees(
+                    math.atan(c/row['x']) - math.atan(b/row['x']))
+            else:
+                angle = 0
+        else:
+            if row['x'] != 0:
+                d = row['y'] - 44.3
+                e = 55.7 - row['y']
+                angle = math.degrees(
+                    math.atan(d/row['x']) + math.atan(e/row['x']))
+            else:
+                angle = 180
+        df.loc[index, 'angle'] = angle
+
+    return df
 
 
 def get_tuned_model(model_type, params, seed):

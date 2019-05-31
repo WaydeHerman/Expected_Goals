@@ -1,0 +1,89 @@
+cross:
+- x
+- y
+- distance
+- angle
+- bigChanceYN
+- errorYN
+- fastBreakYN
+- fromCornerYN
+- indirectFKYN
+- secondThroughballYN
+- goalYN
+- state_-1
+- state_0
+- state_1
+- Premier League
+- La Liga
+- Ligue 1
+- Bundesliga
+- Serie A
+direct:
+- x
+- y
+- distance
+- angle
+- goalYN
+head:
+- x
+- y
+- distance
+- angle
+- bigChanceYN
+- errorYN
+- fastBreakYN
+- fromCornerYN
+- indirectFKYN
+- throughballYN
+- secondThroughballYN
+- reboundYN
+- goalYN
+- state_-1
+- state_0
+- state_1
+- Premier League
+- La Liga
+- Ligue 1
+- Bundesliga
+- Serie A
+head_cross:
+- x
+- y
+- distance
+- angle
+- bigChanceYN
+- errorYN
+- fastBreakYN
+- fromCornerYN
+- indirectFKYN
+- goalYN
+- state_-1
+- state_0
+- state_1
+- Premier League
+- La Liga
+- Ligue 1
+- Bundesliga
+- Serie A
+regular:
+- x
+- y
+- distance
+- angle
+- bigChanceYN
+- errorYN
+- fastBreakYN
+- fromCornerYN
+- indirectFKYN
+- throughballYN
+- secondThroughballYN
+- reboundYN
+- goalYN
+- state_-1
+- state_0
+- state_1
+- Premier League
+- La Liga
+- Ligue 1
+- Bundesliga
+- Serie A
