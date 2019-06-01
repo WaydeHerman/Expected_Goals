@@ -1,0 +1,76 @@
+hyperparameter_space:
+  xgbclassifier__colsample_bytree:
+  - 0.5
+  - 0.6
+  - 0.7
+  - 0.8
+  - 0.9
+  - 1
+  xgbclassifier__gamma:
+  - 0
+  - 0.1
+  - 0.01
+  xgbclassifier__learning_rate: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - !!python/name:numpy.ndarray ''
+    - !!python/tuple
+      - 0
+    - !!binary |
+      Yg==
+    state: !!python/tuple
+    - 1
+    - !!python/tuple
+      - 20
+    - !!python/object/apply:numpy.dtype
+      args:
+      - f8
+      - 0
+      - 1
+      state: !!python/tuple
+      - 3
+      - <
+      - null
+      - null
+      - null
+      - -1
+      - -1
+      - 0
+    - false
+    - !!binary |
+      /Knx0k1iUD+08PBYsuBUP9Ccaf+cmlo/WB11DEzzYD9ASDEsdZllP254H7UMhms/50Esak2JcT/4
+      QqUSm1h2Pybv1vOfeXw/uFF5R34kgj9OhC6SXB6HP0GhK8KedY0/qflJiAzFkj/YbOQk9OqXPxrc
+      IKRTep4/3z2ppidroz8uzF5Knr6oP8VtKrELiK8/Q3XJwAAXtD+amZmZmZm5Pw==
+  xgbclassifier__max_depth:
+  - 3
+  - 4
+  - 6
+  - 8
+  - 10
+  xgbclassifier__min_child_weight:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  xgbclassifier__n_estimators:
+  - 200
+  - 400
+  - 600
+  - 800
+  - 1000
+  - 1200
+  - 1400
+  - 1600
+  - 1800
+  - 2000
+  xgbclassifier__subsample:
+  - 0.5
+  - 0.6
+  - 0.7
+  - 0.8
+  - 0.9
+  - 1
+model_name: XGBClassifier
+scale: false
+search_method: RandomizedSearchCV

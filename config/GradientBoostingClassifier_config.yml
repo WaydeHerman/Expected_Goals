@@ -1,0 +1,59 @@
+hyperparameter_space:
+  gradientboostingclassifier__learning_rate: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - !!python/name:numpy.ndarray ''
+    - !!python/tuple
+      - 0
+    - !!binary |
+      Yg==
+    state: !!python/tuple
+    - 1
+    - !!python/tuple
+      - 20
+    - !!python/object/apply:numpy.dtype
+      args:
+      - f8
+      - 0
+      - 1
+      state: !!python/tuple
+      - 3
+      - <
+      - null
+      - null
+      - null
+      - -1
+      - -1
+      - 0
+    - false
+    - !!binary |
+      /Knx0k1iUD+08PBYsuBUP9Ccaf+cmlo/WB11DEzzYD9ASDEsdZllP254H7UMhms/50Esak2JcT/4
+      QqUSm1h2Pybv1vOfeXw/uFF5R34kgj9OhC6SXB6HP0GhK8KedY0/qflJiAzFkj/YbOQk9OqXPxrc
+      IKRTep4/3z2ppidroz8uzF5Knr6oP8VtKrELiK8/Q3XJwAAXtD+amZmZmZm5Pw==
+  gradientboostingclassifier__max_depth:
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  gradientboostingclassifier__max_features:
+  - null
+  - sqrt
+  gradientboostingclassifier__min_samples_split:
+  - 0.05
+  - 0.1
+  - 0.2
+  - 0.3
+  - 0.4
+  - 0.5
+  gradientboostingclassifier__n_estimators:
+  - 1500
+  - 2000
+  - 2500
+  gradientboostingclassifier__subsample:
+  - 1
+  - 0.9
+  - 0.8
+  - 0.7
+model_name: GradientBoostingClassifier
+scale: false
+search_method: RandomizedSearchCV

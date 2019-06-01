@@ -1,0 +1,61 @@
+hyperparameter_space:
+  svc__C: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - &id001 !!python/name:numpy.ndarray ''
+    - !!python/tuple
+      - 0
+    - !!binary |
+      Yg==
+    state: !!python/tuple
+    - 1
+    - !!python/tuple
+      - 20
+    - &id002 !!python/object/apply:numpy.dtype
+      args:
+      - f8
+      - 0
+      - 1
+      state: !!python/tuple
+      - 3
+      - <
+      - null
+      - null
+      - null
+      - -1
+      - -1
+      - 0
+    - false
+    - !!binary |
+      /Knx0k1iUD9YHXUMTPNgP+dBLGpNiXE/uFF5R34kgj+p+UmIDMWSP989qaYna6M/Q3XJwAAXtD+C
+      goqnysjEPxaWgO25gNU/1up/9gQ/5j/7FbIH5AP3P/GrOViRzwdAwiVpIkmiGEDNHZK1SXwpQKoo
+      cojTXTpAOLxCTClHS0B+yHEAkDhcQN7WCAdPMm1AP7jIObA0fkAAAAAAAECPQA==
+  svc__degree:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  svc__gamma: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id001
+    - !!python/tuple
+      - 0
+    - !!binary |
+      Yg==
+    state: !!python/tuple
+    - 1
+    - !!python/tuple
+      - 10
+    - *id002
+    - false
+    - !!binary |
+      /Knx0k1iUD9UKx9RLaZhP4+Z3gMPA3M/exSuR+F6hD8m9maluA+WP/M/1sTSw6c/mpmZmZmZuT+s
+      s8DOppPLP/DPC3bHtN0/AAAAAAAA8D8=
+  svc__kernel:
+  - rbf
+  - poly
+  svc__probability:
+  - true
+model_name: SVC
+scale: true
+search_method: RandomizedSearchCV
