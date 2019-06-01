@@ -45,6 +45,8 @@ raw_df = pd.concat(data_list, axis=0)
 # Preprocess data:
 data_df = preprocess_data(raw_df)
 
+data_df = data_df[(data_df['penaltyYN'] == 0) & (data_df['ownGoalYN'] == 0)]
+
 # split dataframe into subtypes:
 direct_df = data_df[(data_df['directFKYN'] == 1) & (
     (data_df['indirectFKYN'] == 0) & (data_df['crossYN'] == 0))]

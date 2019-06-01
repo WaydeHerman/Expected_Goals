@@ -18,7 +18,7 @@ n_top_models = 3
 # list_of_datasets = ['direct', 'head_cross', 'cross', 'head', 'regular']
 # list_of_models = ['LogisticRegression', 'RandomForestClassifier', 'BaggingClassifier',
 #                   'GradientBoostingClassifier', 'XGBClassifier', 'SVC']
-list_of_datasets = ['direct', 'head_cross', 'cross', 'head', 'regular']
+list_of_datasets = ['direct']
 list_of_models = ['LogisticRegression', 'RandomForestClassifier']
 
 results = []
@@ -64,7 +64,7 @@ for dataset in list_of_datasets:
 
             params = grid.cv_results_['params'][model_id]
 
-            result_dict_uncal = {'id_num': id_num, 'model_type': model_type, 'dataset': dataset, 'calibration': 0,
+            result_dict_uncal = {'id_num': id_num, 'model_type': model_type, 'dataset': dataset, 'calibration': False, 'scale': scale,
                                  'val_mean': grid.cv_results_['mean_test_score'][model_id], 'val_std': grid.cv_results_['std_test_score'][model_id],
                                  'train_mean': grid.cv_results_['mean_train_score'][model_id], 'train_std': grid.cv_results_['std_train_score'][model_id],
                                  'params': params}
@@ -75,7 +75,7 @@ for dataset in list_of_datasets:
                 X_train = scaler.transform(X_train)
                 X_test = scaler.transform(X_test)
 
-            tuned_model = get_tuned_model(model_type, params, SEED)
+            tuned_model = get_tuned_model(model_type, params)
             tuned_model.fit(X_train, y_train)
             probability = (np.array(tuned_model.predict_proba(X_test)[:, 1]))
             export_calibration_plot(
@@ -94,7 +94,7 @@ for dataset in list_of_datasets:
             val_auc_score = roc_auc_score(y_test, probability_cal_val)
             train_auc_score = roc_auc_score(y_train, probability_cal_train)
 
-            result_dict_cal = {'id_num': id_num, 'model_type': model_type, 'dataset': dataset, 'calibration': 1,
+            result_dict_cal = {'id_num': id_num, 'model_type': model_type, 'dataset': dataset, 'calibration': True, 'scale': scale,
                                'val_mean': val_auc_score, 'val_std': 0,
                                'train_mean': train_auc_score, 'train_std': 0,
                                'params': params}

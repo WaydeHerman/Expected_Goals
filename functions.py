@@ -2,11 +2,13 @@
 import pandas as pd
 import numpy as np
 import math
+import ast
 from matplotlib import pyplot
-from sklearn.calibration import calibration_curve
-from sklearn.preprocessing import minmax_scale
+from sklearn.calibration import calibration_curve, CalibratedClassifierCV
+from sklearn.preprocessing import minmax_scale, StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.externals import joblib
 
 
 def preprocess_data(df):
@@ -19,7 +21,6 @@ def preprocess_data(df):
     df['Bundesliga'] = df['league'].apply(
         lambda x: 1 if x == 'Bundesliga' else 0)
     df['Serie A'] = df['league'].apply(lambda x: 1 if x == 'Serie A' else 0)
-    df.drop(['league'], axis=1, inplace=True)
 
     # 'one-hot' encoding for state feature:
     df['state_-1'] = df['state'].apply(lambda x: 1 if x <= -1 else 0)
@@ -64,7 +65,7 @@ def preprocess_data(df):
     return df
 
 
-def get_tuned_model(model_type, params, seed):
+def get_tuned_model(model_type, params, seed=17):
     if model_type == 'LogisticRegression':
         C = params['logisticregression__C']
         solver = params['logisticregression__solver']
@@ -105,3 +106,45 @@ def export_calibration_plot(probability, y_test, id_num, dataset, model_type, ca
     pyplot.savefig('Results/{}_{}_{}_{}.png'.format(id_num,
                                                     dataset, model_type, calibrated), bbox_inches='tight')
     pyplot.close('all')
+
+
+def train_model(dataset, id_num, results, input_path='data/processed/', output_path='Models/'):
+
+    config = results.loc[id_num]
+    model_name = config['model_type']
+    scale = config['scale']
+    calibration = config['calibration']
+
+    df = pd.read_csv(input_path + '{}.csv'.format(dataset))
+    X_train = df.drop(['goalYN'], axis=1)
+    y_train = df['goalYN']
+
+    if scale == True:
+        scaler = StandardScaler().fit(X_train)
+        X_train = scaler.transform(X_train)
+        joblib.dump(scaler, (output_path + '{}_scaler.joblib'.format(dataset)))
+
+    params = ast.literal_eval(config['params'])
+
+    if dataset != config['dataset']:
+        print('Incorrect model choice, Model Dataset {} used with dataset {}'.format(
+            config['dataset'], dataset))
+
+    model = get_tuned_model(model_name, params)
+    model.fit(X_train, y_train)
+
+    if calibration == True:
+        model = CalibratedClassifierCV(model, method='sigmoid', cv=10)
+        model.fit(X_train, y_train)
+
+    joblib.dump(model, (output_path + '{}_model.joblib'.format(dataset)))
+
+
+def make_prediction(index, row, features, scaler, model):
+    X = row[features].drop(['goalYN'])
+    if scaler != None:
+        X = pd.DataFrame(scaler.transform(
+            X.values.reshape((1, -1))))
+    # predict with model
+    xg = model.predict_proba(X.values.reshape((1, -1)))[0][1]
+    return xg
