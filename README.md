@@ -33,8 +33,8 @@ Keywords: Data Mining / Python (pandas, matplotlib) / Random Forest / Logistic R
    python JSON_to_raw.py
    ```
 
-   This will extract the individual shot data from the JSON files. There is a
-   JSON file for each season in each of the top five european leagues, namely
+   This will extract the individual shot data from the scraped JSON files. There
+   is a JSON file for each season in each of the top five european leagues, namely
    'Premier League', 'Serie A', 'La Liga', 'Bundesila', and 'Ligue 1'. The output
    of these are stored in the `Data/raw` directory as `shots_league_season.csv`.
 
@@ -53,19 +53,50 @@ Keywords: Data Mining / Python (pandas, matplotlib) / Random Forest / Logistic R
    within `config/features_config.yaml`. The output of these are stored within the
    `Data/processed` directory as csv's.
 
-### Hyperparameter optimisation
+### Hyperparameter tuning:
 
-1. Run the hyperparameter optimisation script:
+1. Run the hyperparameter tuning script:
 
    ```bash
    python hyperparameter_tuning.py
    ```
 
-1) tune models (hyperparameter_tuning.py)
+   This script tunes models for each shot subtype. The models to be tuned may be chosen
+   from a predefined list. The hyperparameter space to be searched, the way they are to
+   be searched (ie grid search or random search), whether scaling is required by the model,
+   as well as the number of iterations for random search are all stored in yaml config
+   files for each model type. ie `config/LogisticRegression_config.yaml`. Models are
+   selected based on their roc auc score. The best N models are then further evaluated
+   by their calibration curves. Calibration curves for each top n model as well as their
+   calibrated version are saved in `Results` as well as a csv storing the best N model's
+   hyperparameters as well as their scores.
 
-   - hyperparameter space defined by config files.
-   - results evaluated by roc auc then my inspecing the calibration graphs.
+2. Inspect results:
 
-1) train the final models (train_models.py)
+   The scores for each model may be inspected using the `Results.ipynb` notebook. These
+   scores along with the calibration curves for each model, stored in `Results`, are
+   used to determine which model to use for prediction.
 
-1) make predictions
+   _insert example of calibration curve_
+
+3. Run the train models script:
+
+   ```bash
+   python train_models.py
+   ```
+
+   This script trains the final model for each subtype using the `id_num`.
+
+### Predictions:
+
+1. Run the prediction script:
+
+   ```bash
+   python predictions.py
+   ```
+
+   This script predicts the expected goals for a game. Producing an image revealing the
+   shot location and expected goal for each shot in the game. It also provides the sum
+   for each team.
+
+   _insert example of match result_
