@@ -4,8 +4,8 @@ from functions import train_model
 
 results = pd.read_csv('Results/results.csv', index_col='id_num')
 
-train_model('direct', 2, results)
-# train_model('head_cross', 2)
-# train_model('cross', 2)
-# train_model('head', 2)
-# train_model('regular', 2)
+train_model('direct', 4, results)
+train_model('head_cross', 12, results)
+train_model('cross', 17, results)
+train_model('head', 21, results)
+train_model('regular', 25, results)

@@ -18,8 +18,8 @@ n_top_models = 3
 # list_of_datasets = ['direct', 'head_cross', 'cross', 'head', 'regular']
 # list_of_models = ['LogisticRegression', 'RandomForestClassifier', 'BaggingClassifier',
 #                   'GradientBoostingClassifier', 'XGBClassifier', 'SVC']
-list_of_datasets = ['direct']
-list_of_models = ['LogisticRegression', 'RandomForestClassifier']
+list_of_datasets = ['direct', 'head_cross', 'cross', 'head', 'regular']
+list_of_models = ['LogisticRegression']
 
 results = []
 id_num = 0
