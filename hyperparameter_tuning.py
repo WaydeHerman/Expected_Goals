@@ -18,11 +18,17 @@ n_top_models = 3
 # list_of_datasets = ['direct', 'head_cross', 'cross', 'head', 'regular']
 # list_of_models = ['LogisticRegression', 'RandomForestClassifier', 'BaggingClassifier',
 #                   'GradientBoostingClassifier', 'XGBClassifier', 'SVC']
-list_of_datasets = ['direct', 'head_cross', 'cross', 'head', 'regular']
+list_of_datasets = ['direct']
 list_of_models = ['LogisticRegression']
 
-results = []
-id_num = 0
+try:
+    results_df = pd.read_csv(OUTPUT_PATH + 'results.csv')
+    id_num = results_df['id_num'].max()
+except FileNotFoundError:
+    id_num = 0
+
+results_list = []
+
 for dataset in list_of_datasets:
     for model_type in list_of_models:
         with open("config/{}_config.yml".format(model_type), 'r') as stream:
@@ -68,7 +74,7 @@ for dataset in list_of_datasets:
                                  'val_mean': grid.cv_results_['mean_test_score'][model_id], 'val_std': grid.cv_results_['std_test_score'][model_id],
                                  'train_mean': grid.cv_results_['mean_train_score'][model_id], 'train_std': grid.cv_results_['std_train_score'][model_id],
                                  'params': params}
-            results.append(result_dict_uncal)
+            results_list.append(result_dict_uncal)
 
             if scale == True:
                 scaler = StandardScaler().fit(X_train)
@@ -98,11 +104,18 @@ for dataset in list_of_datasets:
                                'val_mean': val_auc_score, 'val_std': 0,
                                'train_mean': train_auc_score, 'train_std': 0,
                                'params': params}
-            results.append(result_dict_cal)
+            results_list.append(result_dict_cal)
 
             export_calibration_plot(
                 probability_cal_val, y_test, id_num, dataset, model_type, calibrated=True)
 
-results = pd.DataFrame(results)
+results = pd.DataFrame(results_list)
+
+
+try:
+    results = pd.concat([results_df, results], axis=0)
+except NameError:
+    pass
+
 
 results.to_csv(OUTPUT_PATH + 'results.csv', index=False)
