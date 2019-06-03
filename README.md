@@ -37,9 +37,9 @@ The models are evaluated both by the prediction performance as well as the calib
    'Serie A', 'La Liga', 'Bundesila', and 'Ligue 1'. The output of these are stored
    in the `Data/raw` directory as `shots_league_season.csv`.
 
-   Note: these are available to download at 'Insert Download Link'.
+   Note: these are available to download at [Insert Download Link](https://drive.google.com/file/d/1RgRst1HY7AmfaEySKf7qE-TpPzSXc9kD/view?usp=sharing).
 
-2. Run the raw processing script:
+2) Run the raw processing script:
 
    ```bash
    python raw_to_features.py
