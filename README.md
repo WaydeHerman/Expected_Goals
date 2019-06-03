@@ -74,7 +74,10 @@ The models are evaluated both by the prediction performance as well as the calib
 
    The scores for each model may be inspected using the `Results.ipynb` notebook. These
    scores along with the calibration curves for each model, stored in `Results`, are
-   used to determine which model to use for prediction.
+   used to determine which model to use for prediction. Calibration curves are plots of
+   the relative frequency between the target and the predictions. These are plotted
+   above the distribution of the prediction frequences to determine which frequencies
+   are the most important.
 
    ![example calibration curve](/Results/55_regular_RandomForestClassifier_False.png "Example Calibration Curve")
 
@@ -99,4 +102,4 @@ The models are evaluated both by the prediction performance as well as the calib
    shot location and expected goal for each shot in the game. It also provides the sum
    for each team.
 
-   _insert example of match result_
+   ![example result](/Matches/Arsenal_Chelsea_2014-2015.png "Example Result")
