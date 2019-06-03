@@ -102,4 +102,4 @@ The models are evaluated both by the prediction performance as well as the calib
    shot location and expected goal for each shot in the game. It also provides the sum
    for each team.
 
-   ![example result](/Matches/Arsenal_Chelsea_2014-2015.png "Example Result")
+   ![example result](/Games/Arsenal_Chelsea_2014-2015.png "Example Result")
