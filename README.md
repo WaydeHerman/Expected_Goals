@@ -25,7 +25,7 @@ The models are evaluated both by the prediction performance as well as the calib
 
 ### Data ingest and pre-processing:
 
-1. Run the data JSON processing script:
+1. Run the JSON processing script:
 
    ```bash
    python JSON_to_raw.py
@@ -39,7 +39,7 @@ The models are evaluated both by the prediction performance as well as the calib
 
    Note: these are available to download at 'Insert Download Link'.
 
-2. Run the data raw processing script:
+2. Run the raw processing script:
 
    ```bash
    python raw_to_features.py
@@ -76,7 +76,7 @@ The models are evaluated both by the prediction performance as well as the calib
    scores along with the calibration curves for each model, stored in `Results`, are
    used to determine which model to use for prediction.
 
-   _insert example of calibration curve_
+   ![example calibration curve](/Results/55_regular_RandomForestClassifier_False.png "Example Calibration Curve")
 
 3. Run the train models script:
 
@@ -84,7 +84,8 @@ The models are evaluated both by the prediction performance as well as the calib
    python train_models.py
    ```
 
-   This script trains the final model for each subtype using the `id_num`.
+   This script trains the final model for each subtype using the `id_num`. These models,
+   along with any scaling, are saved as joblib files.
 
 ### Predictions:
 
