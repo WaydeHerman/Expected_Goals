@@ -3,6 +3,7 @@ import numpy as np
 import yaml
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 from sklearn.preprocessing import StandardScaler, minmax_scale
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV, train_test_split
 from sklearn.pipeline import make_pipeline
@@ -11,15 +12,16 @@ from sklearn.metrics import roc_auc_score
 from matplotlib import pyplot
 from functions import get_tuned_model, export_calibration_plot
 
+
 SEED = 17
 OUTPUT_PATH = './Results/'
-n_top_models = 3
+n_top_models = 2
 
 # list_of_datasets = ['direct', 'head_cross', 'cross', 'head', 'regular']
 # list_of_models = ['LogisticRegression', 'RandomForestClassifier', 'BaggingClassifier',
 #                   'GradientBoostingClassifier', 'XGBClassifier', 'SVC']
-list_of_datasets = ['direct']
-list_of_models = ['LogisticRegression']
+list_of_datasets = ['direct', 'head_cross', 'cross', 'head', 'regular']
+list_of_models = ['RandomForestClassifier']
 
 try:
     results_df = pd.read_csv(OUTPUT_PATH + 'results.csv')
@@ -36,6 +38,7 @@ for dataset in list_of_datasets:
         model_name = config_dict['model_name']
         scale = config_dict['scale']
         search_method = config_dict['search_method']
+        iters = config_dict['iters']
         hyperparameter_space = config_dict['hyperparameter_space']
 
         data_df = pd.read_csv('data/processed/{}.csv'.format(dataset))
@@ -48,6 +51,8 @@ for dataset in list_of_datasets:
             estimator = LogisticRegression(random_state=SEED)
         elif model_name == 'RandomForestClassifier':
             estimator = RandomForestClassifier(random_state=SEED)
+        elif model_name == 'XGBClassifier':
+            estimator = XGBClassifier(seed=SEED)
 
         if scale == True:
             pipe = make_pipeline(StandardScaler(), estimator)
@@ -59,7 +64,7 @@ for dataset in list_of_datasets:
                 pipe, hyperparameter_space, scoring='roc_auc', cv=5, n_jobs=-1, verbose=0, return_train_score=True)
         elif search_method == 'RandomizedSearchCV':
             grid = RandomizedSearchCV(
-                pipe, hyperparameter_space, scoring='roc_auc', cv=5, n_jobs=-1, verbose=0, return_train_score=True)
+                pipe, hyperparameter_space, scoring='roc_auc', cv=5, n_jobs=-1, verbose=0, return_train_score=True, n_iter=iters)
 
         grid.fit(X_train, y_train)
 

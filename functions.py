@@ -8,10 +8,17 @@ from sklearn.calibration import calibration_curve, CalibratedClassifierCV
 from sklearn.preprocessing import minmax_scale, StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.externals import joblib
+from xgboost import XGBClassifier
+import matplotlib.pyplot as plt
+from joblib import dump
 
 
 def preprocess_data(df):
+    """
+    Apply hardcoded feature engineering.
+
+    :param df: data to be preprocessed.
+    """
 
     # 'one-hot' encoding for league feature:
     df['Premier League'] = df['league'].apply(
@@ -66,6 +73,14 @@ def preprocess_data(df):
 
 
 def get_tuned_model(model_type, params, seed=17):
+    """
+    Returns a model with desired hyperparameters.
+
+    :param model_type: type of classifier.
+    :param params: dictionary of hyperparameters.
+    :param seed: sets the seed for reproducability.
+    """
+
     if model_type == 'LogisticRegression':
         C = params['logisticregression__C']
         solver = params['logisticregression__solver']
@@ -80,10 +95,30 @@ def get_tuned_model(model_type, params, seed=17):
         estimator = RandomForestClassifier(n_estimators=n_estimators, max_features=max_features, max_depth=max_depth,
                                            min_samples_split=min_samples_split, min_samples_leaf=min_samples_leaf,
                                            bootstrap=bootstrap, random_state=seed)
+    if model_type == 'XGBClassifier':
+        n_estimators = params['xgbclassifier__n_estimators']
+        learning_rate = params['xgbclassifier__learning_rate']
+        subsample = params['xgbclassifier__subsample']
+        colsample_bytree = params['xgbclassifier__colsample_bytree']
+        gamma = params['xgbclassifier__gamma']
+        min_child_weight = params['xgbclassifier__min_child_weight']
+        estimator = XGBClassifier(n_estimators=n_estimators, learning_rate=learning_rate, subsample=subsample,
+                                           colsample_bytree=colsample_bytree, gamma=gamma,
+                                           bootmin_child_weightstrap=min_child_weight, seed=seed)
     return estimator
 
 
 def export_calibration_plot(probability, y_test, id_num, dataset, model_type, calibrated):
+    """
+    Plots and exports a calibration curve above the distribtion of predictions.
+
+    :param probability: the predicted probability of the test set.
+    :param y_test: the target of the test set.
+    :param id_num: the id number of this particular hyperparameter values.
+    :param dataset: the subtype of shot.
+    :param model_type: the type of classifier.
+    :param calibrated: whether the model is calibrated or not.
+    """
     fop, mpv = calibration_curve(
         y_test, probability, n_bins=10)
 
@@ -108,21 +143,30 @@ def export_calibration_plot(probability, y_test, id_num, dataset, model_type, ca
     pyplot.close('all')
 
 
-def train_model(dataset, id_num, results, input_path='data/processed/', output_path='Models/'):
+def train_model(dataset, id_num, input_path_results='Results/', input_path_shots='data/processed/', output_path='Models/'):
+    """
+    Returns a trained model using tuned hyperparameters.
 
+    :param dataset: the subtype of shot.
+    :param id_num: the id number of this particular hyperparameter values.
+    :param input_path_results: the directory to import tuning results.
+    :param input_path_shots: the directory to import shot data.
+    :param output_path: the directory to save models.
+    """
+    results = pd.read_csv(input_path_results + 'results.csv', index_col='id_num')
     config = results.loc[id_num]
     model_name = config['model_type']
     scale = config['scale']
     calibration = config['calibration']
 
-    df = pd.read_csv(input_path + '{}.csv'.format(dataset))
+    df = pd.read_csv(input_path_shots + '{}.csv'.format(dataset))
     X_train = df.drop(['goalYN'], axis=1)
     y_train = df['goalYN']
 
     if scale == True:
         scaler = StandardScaler().fit(X_train)
         X_train = scaler.transform(X_train)
-        joblib.dump(scaler, (output_path + '{}_scaler.joblib'.format(dataset)))
+        dump(scaler, (output_path + '{}_scaler.joblib'.format(dataset)))
 
     params = ast.literal_eval(config['params'])
 
@@ -137,10 +181,19 @@ def train_model(dataset, id_num, results, input_path='data/processed/', output_p
         model = CalibratedClassifierCV(model, method='sigmoid', cv=10)
         model.fit(X_train, y_train)
 
-    joblib.dump(model, (output_path + '{}_model.joblib'.format(dataset)))
+    dump(model, (output_path + '{}_model.joblib'.format(dataset)))
 
 
 def make_prediction(index, row, features, scaler, model):
+    """
+    Predicts the expected goal of a particular shot.
+
+    :param index: index of individual shot.
+    :param row: feature values of individual shot.
+    :param features: features required to make prediction.
+    :param scaler: a scaler, if one is required.
+    :param model: the classifier used to make the prediction.
+    """
     X = row[features].drop(['goalYN'])
     if scaler != None:
         X = pd.DataFrame(scaler.transform(
@@ -149,15 +202,25 @@ def make_prediction(index, row, features, scaler, model):
     xg = model.predict_proba(X.values.reshape((1, -1)))[0][1]
     return xg
 
-import matplotlib.pyplot as plt
+
 
 def get_game_xg(game_df, pitch="#195905", line="#faf0e6", orientation="h",view="full"):
-    
-    
+    """
+    Returns a plot of the expected goals for a match.
+    Note: credit for plotting the pitch goes to @petermckeever
+
+    :param game_df: dataframe of shots of desired game.
+    :param pitch: pitch color.
+    :param line: line color
+    :param orientation: whether horizontal or vertical pitch orientation.
+    :param view: full or half pitch view.
+    """    
     orientation = orientation
     view = view
     line = line
     pitch = pitch
+
+    game_df.reset_index(inplace=True)
     
     if orientation.lower().startswith("h"):
         
@@ -175,7 +238,7 @@ def get_game_xg(game_df, pitch="#195905", line="#faf0e6", orientation="h",view="
         ly1 = [0,0,68,68,0]
         lx1 = [0,104,104,0,0]
 
-        plt.plot(lx1,ly1,color=line,zorder=5)
+        plt.plot(lx1,ly1,color=line,zorder=5,lw=2.5)
 
 
         # boxes, 6 yard box and goals
@@ -183,44 +246,44 @@ def get_game_xg(game_df, pitch="#195905", line="#faf0e6", orientation="h",view="
             #outer boxes#
         ly2 = [13.84,13.84,54.16,54.16] 
         lx2 = [104,87.5,87.5,104]
-        plt.plot(lx2,ly2,color=line,zorder=5)
+        plt.plot(lx2,ly2,color=line,zorder=5,lw=2.5)
 
         ly3 = [13.84,13.84,54.16,54.16] 
         lx3 = [0,16.5,16.5,0]
-        plt.plot(lx3,ly3,color=line,zorder=5)
+        plt.plot(lx3,ly3,color=line,zorder=5,lw=2.5)
 
             #goals#
         ly4 = [30.34,30.34,37.66,37.66]
         lx4 = [104,104.2,104.2,104]
-        plt.plot(lx4,ly4,color=line,zorder=5)
+        plt.plot(lx4,ly4,color=line,zorder=5,lw=2.5)
 
         ly5 = [30.34,30.34,37.66,37.66]
         lx5 = [0,-0.2,-0.2,0]
-        plt.plot(lx5,ly5,color=line,zorder=5)
+        plt.plot(lx5,ly5,color=line,zorder=5,lw=2.5)
 
 
            #6 yard boxes#
         ly6 = [24.84,24.84,43.16,43.16]
         lx6 = [104,99.5,99.5,104]
-        plt.plot(lx6,ly6,color=line,zorder=5)
+        plt.plot(lx6,ly6,color=line,zorder=5,lw=2.5)
 
         ly7 = [24.84,24.84,43.16,43.16]
         lx7 = [0,4.5,4.5,0]
-        plt.plot(lx7,ly7,color=line,zorder=5)
+        plt.plot(lx7,ly7,color=line,zorder=5,lw=2.5)
 
         #Halfway line, penalty spots, and kickoff spot
         ly8 = [0,68] 
         lx8 = [52,52]
-        plt.plot(lx8,ly8,color=line,zorder=5)
+        plt.plot(lx8,ly8,color=line,zorder=5,lw=2.5)
 
 
         plt.scatter(93,34,color=line,zorder=5)
         plt.scatter(11,34,color=line,zorder=5)
         plt.scatter(52,34,color=line,zorder=5)
 
-        circle1 = plt.Circle((93.5,34), 9.15,ls='solid',lw=1.5,color=line, fill=False, zorder=1,alpha=1)
-        circle2 = plt.Circle((10.5,34), 9.15,ls='solid',lw=1.5,color=line, fill=False, zorder=1,alpha=1)
-        circle3 = plt.Circle((52, 34), 9.15,ls='solid',lw=1.5,color=line, fill=False, zorder=2,alpha=1)
+        circle1 = plt.Circle((93.5,34), 9.15,ls='solid',lw=2.5,color=line, fill=False, zorder=1,alpha=1)
+        circle2 = plt.Circle((10.5,34), 9.15,ls='solid',lw=2.5,color=line, fill=False, zorder=1,alpha=1)
+        circle3 = plt.Circle((52, 34), 9.15,ls='solid',lw=2.5,color=line, fill=False, zorder=2,alpha=1)
 
         ## Rectangles in boxes
         rec1 = plt.Rectangle((87.5,20), 16,30,ls='-',color=pitch, zorder=1,alpha=1)
@@ -328,14 +391,14 @@ def get_game_xg(game_df, pitch="#195905", line="#faf0e6", orientation="h",view="
         
     x1 = game_df[game_df['homeTeam'] == game_df['team']]['xM']
     y1 = game_df[game_df['homeTeam'] == game_df['team']]['yM']
-    s1 = game_df[game_df['homeTeam'] == game_df['team']]['xg'] * 250
+    s1 = game_df[game_df['homeTeam'] == game_df['team']]['xg'] * 450
     x2 = game_df[game_df['awayTeam'] == game_df['team']]['xM']
     y2 = game_df[game_df['awayTeam'] == game_df['team']]['yM']
-    s2 = game_df[game_df['awayTeam'] == game_df['team']]['xg'] * 250
+    s2 = game_df[game_df['awayTeam'] == game_df['team']]['xg'] * 450
 
-    plt.scatter(x1,y1,s1,marker='o',color='red',edgecolors="black", zorder=12)
-    plt.scatter(x2,y2,s2,marker='o',color='blue',edgecolors="black", zorder=12)
-    plt.text(4,62,'{} - {}'.format(home_team, away_team), color='white', fontsize=15, fontweight='bold')
-    plt.text(4,58,'xg: {} - {}'.format(home_xg, away_xg), color='white', fontsize=15, fontweight='bold')
+    plt.scatter(x1,y1,s1,marker='o',color='#c0392b',edgecolors="black", zorder=12, lw=2)
+    plt.scatter(x2,y2,s2,marker='o',color='#2980b9',edgecolors="black", zorder=12, lw=2)
+    plt.text(4,62,'{} - {}'.format(home_team, away_team), color='#ecf0f1', fontsize=15, fontweight='bold')
+    plt.text(4,58,'xg: {} - {}'.format(home_xg, away_xg), color='#ecf0f1', fontsize=15, fontweight='bold')
     plt.savefig('Games/{}_{}_{}.png'.format(home_team, away_team, season))
     plt.close('all')

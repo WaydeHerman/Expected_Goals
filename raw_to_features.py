@@ -10,6 +10,7 @@ import math
 import numpy as np
 import pandas as pd
 import yaml
+import os
 from functions import preprocess_data
 
 INPUT_PATH = './Data/raw/'
@@ -28,45 +29,55 @@ cross_features = feature_dict['cross']
 head_features = feature_dict['head']
 regular_features = feature_dict['regular']
 
-# Concat different leagues:
-data_list = []
-for season in list_of_seasons:
-    for league in list_of_leagues:
-        tmp_df = pd.read_csv((INPUT_PATH + "shots_{}{}.csv".format(league, season)), header=None, names=['league', 'season',
-                                                                                                         'homeTeam', 'awayTeam', 'date', 'team', 'min', 'sec', 'x', 'y', 'goalYN',
-                                                                                                         'state', 'headerYN', 'bigChanceYN', 'fromCornerYN', 'fastBreakYN',
-                                                                                                         'penaltyYN', 'directFKYN', 'ownGoalYN', 'chanceX1', 'chanceY1',
-                                                                                                         'chanceX2', 'chanceY2', 'crossYN', 'throughballYN', 'indirectFKYN',
-                                                                                                         'secondThroughballYN', 'dribbleKeeperYN', 'dribbleBeforeYN', 'reboundYN',
-                                                                                                         'errorYN', 'onTarget', 'sixYard', 'penaltyArea', 'outBox'])
-        data_list.append(tmp_df)
-raw_df = pd.concat(data_list, axis=0)
+for filename in os.listdir(INPUT_PATH):
+    # iterate through every JSON file in directory:
+    name = filename[6:-4]
+    league = name[:-4]
+    season = name[-4:]
+    if len(season) == 4:
+        print(league)
+        print(season)
+        print(filename)
 
-# Preprocess data:
-data_df = preprocess_data(raw_df)
+# # Concat different leagues:
+# data_list = []
+# for season in list_of_seasons:
+#     for league in list_of_leagues:
+#         tmp_df = pd.read_csv((INPUT_PATH + "shots_{}{}.csv".format(league, season)), header=None, names=['league', 'season',
+#                                                                                                          'homeTeam', 'awayTeam', 'date', 'team', 'min', 'sec', 'x', 'y', 'goalYN',
+#                                                                                                          'state', 'headerYN', 'bigChanceYN', 'fromCornerYN', 'fastBreakYN',
+#                                                                                                          'penaltyYN', 'directFKYN', 'ownGoalYN', 'chanceX1', 'chanceY1',
+#                                                                                                          'chanceX2', 'chanceY2', 'crossYN', 'throughballYN', 'indirectFKYN',
+#                                                                                                          'secondThroughballYN', 'dribbleKeeperYN', 'dribbleBeforeYN', 'reboundYN',
+#                                                                                                          'errorYN', 'onTarget', 'sixYard', 'penaltyArea', 'outBox'])
+#         data_list.append(tmp_df)
+# raw_df = pd.concat(data_list, axis=0)
 
-data_df = data_df[(data_df['penaltyYN'] == 0) & (data_df['ownGoalYN'] == 0)]
+# # Preprocess data:
+# data_df = preprocess_data(raw_df)
 
-# split dataframe into subtypes:
-direct_df = data_df[(data_df['directFKYN'] == 1) & (
-    (data_df['indirectFKYN'] == 0) & (data_df['crossYN'] == 0))]
-head_cross_df = data_df[(data_df['headerYN'] == 1) & (data_df['crossYN'] == 1)]
-cross_df = data_df[(data_df['headerYN'] == 0)
-                   & (data_df['crossYN'] == 1)]
-head_df = data_df[(data_df['headerYN'] == 1) & (data_df['crossYN'] == 0)]
-regular_df = data_df[(data_df['headerYN'] == 0) & (
-    data_df['crossYN'] == 0) & (data_df['directFKYN'] == 0)]
+# data_df = data_df[(data_df['penaltyYN'] == 0) & (data_df['ownGoalYN'] == 0)]
 
-# Subselect featureas to be used:
-direct_df = direct_df[direct_features]
-head_cross_df = head_cross_df[head_cross_features]
-cross_df = cross_df[cross_features]
-head_df = head_df[head_features]
-regular_df = regular_df[regular_features]
+# # split dataframe into subtypes:
+# direct_df = data_df[(data_df['directFKYN'] == 1) & (
+#     (data_df['indirectFKYN'] == 0) & (data_df['crossYN'] == 0))]
+# head_cross_df = data_df[(data_df['headerYN'] == 1) & (data_df['crossYN'] == 1)]
+# cross_df = data_df[(data_df['headerYN'] == 0)
+#                    & (data_df['crossYN'] == 1)]
+# head_df = data_df[(data_df['headerYN'] == 1) & (data_df['crossYN'] == 0)]
+# regular_df = data_df[(data_df['headerYN'] == 0) & (
+#     data_df['crossYN'] == 0) & (data_df['directFKYN'] == 0)]
 
-# Save as csv's:
-direct_df.to_csv(OUTPUT_PATH + 'direct.csv', index=False)
-head_cross_df.to_csv(OUTPUT_PATH + 'head_cross.csv', index=False)
-cross_df.to_csv(OUTPUT_PATH + 'cross.csv', index=False)
-head_df.to_csv(OUTPUT_PATH + 'head.csv', index=False)
-regular_df.to_csv(OUTPUT_PATH + 'regular.csv', index=False)
+# # Subselect featureas to be used:
+# direct_df = direct_df[direct_features]
+# head_cross_df = head_cross_df[head_cross_features]
+# cross_df = cross_df[cross_features]
+# head_df = head_df[head_features]
+# regular_df = regular_df[regular_features]
+
+# # Save as csv's:
+# direct_df.to_csv(OUTPUT_PATH + 'direct.csv', index=False)
+# head_cross_df.to_csv(OUTPUT_PATH + 'head_cross.csv', index=False)
+# cross_df.to_csv(OUTPUT_PATH + 'cross.csv', index=False)
+# head_df.to_csv(OUTPUT_PATH + 'head.csv', index=False)
+# regular_df.to_csv(OUTPUT_PATH + 'regular.csv', index=False)
