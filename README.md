@@ -79,7 +79,7 @@ The models are evaluated both by the prediction performance as well as the calib
    above the distribution of the prediction frequences to determine which frequencies
    are the most important.
 
-   ![example calibration curve](/Results/55_regular_RandomForestClassifier_False.png "Example Calibration Curve")
+   ![example calibration curve](/Results/37_regular_XGBClassifier_False.png "Example Calibration Curve")
 
 3. Run the train models script:
 
