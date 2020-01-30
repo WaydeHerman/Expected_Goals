@@ -6,6 +6,8 @@ Interesting things about this project include the structure as well as the evalu
 
 The models are evaluated both by the prediction performance as well as the calibration of their predictions. The latter is evaluated using visual inspection of their calibration curves as opposed to a single metric, which is usually advised.
 
+**Note:** A 'web-app' presentation of this model can be found [here](https://waydeherman.github.io/Expected-Goals-Web-App/#).
+
 **Keywords:** Python (Pandas, Matplotlib) / Logistic Regression / SVM / Random Forest / Gradboost / XGBoost / Calibration / Model Pipeline
 
 ### Setting up:
